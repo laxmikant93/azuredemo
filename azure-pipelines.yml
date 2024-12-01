@@ -7,8 +7,30 @@ trigger:
 - main
 
 pool:
-  vmImage: local
+  vmImage: ubuntu-latest
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+- task: NodeTaskRunnerInstaller@0
+  inputs:
+    nodeVersion: '6'
+
+- task: Npm@1
+  inputs:
+    command: 'install'
+    workingDir: '.'
+  displayName: 'install'  
+
+- task: Npm@1
+  inputs:
+    command: 'custom'
+    workingDir: '.'
+    customCommand: 'npm run build'
+  displayName: 'build'
+    
+- task: CopyPublishBuildArtifacts@1
+  inputs:
+    CopyRoot: 'build'
+    Contents: 'npm build'
+    ArtifactName: 'build'
+    ArtifactType: 'Container'
+  displayName: 'artifacts'
